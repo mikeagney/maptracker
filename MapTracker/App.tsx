@@ -56,7 +56,7 @@ function App(): JSX.Element {
       [
         {
           key: uuidv4(),
-          name: 'Munene Mune',
+          name: 'Mimithi Mithi',
           holes: [1, 3],
           totalMaps: 3,
         },

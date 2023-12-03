@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { Button, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  buttonCol: { width: '30%', paddingRight: 5 },
+  buttonCol: { paddingLeft: 5 },
   textCol: { flex: 1 },
 });
 
@@ -32,36 +33,36 @@ export function EditableText({
   );
   return (
     <View style={styles.row}>
-      <View style={styles.buttonCol}>
-        {state.isEditing ? (
-          <View style={{ flexDirection: 'row' }}>
-            <Button
-              title="Save"
-              onPress={() => {
-                setState({ ...state, isEditing: false });
-                onChangeText(state.currentValue);
-              }}
-            />
-            <Button
-              title="Revert"
-              onPress={() =>
-                setState({ isEditing: false, currentValue: value })
-              }
-            />
-          </View>
-        ) : (
-          <Button
-            title="Edit"
-            onPress={() => setState({ ...state, isEditing: true })}
-          />
-        )}
-      </View>
       <View style={styles.textCol}>
         <TextInput
           value={state.currentValue}
           editable={state.isEditing}
+          onFocus={() => setState({ ...state, isEditing: true })}
           onChangeText={text => setState({ ...state, currentValue: text })}
         />
+      </View>
+      <View style={styles.buttonCol}>
+        {state.isEditing && (
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Pressable
+              onPress={() => {
+                setState({ ...state, isEditing: false });
+                onChangeText(state.currentValue);
+              }}>
+              <Icon name="save-outline" size={24} accessibilityLabel="Save" />
+            </Pressable>
+            <Pressable
+              onPress={() =>
+                setState({ isEditing: false, currentValue: value })
+              }>
+              <Icon
+                name="arrow-undo-outline"
+                size={24}
+                accessibilityLabel="Revert"
+              />
+            </Pressable>
+          </View>
+        )}
       </View>
     </View>
   );
