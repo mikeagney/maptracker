@@ -13,28 +13,29 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  TextInput,
   useColorScheme,
   View,
 } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { MapPartyList } from './components/MapPartyList';
 import { MapPartyMember } from './data/MapPartyMember';
+import { Colors } from './components/Colors';
 
 type SectionProps = PropsWithChildren<{
   title: string;
 }>;
 
 function Section({ children, title }: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const { foreground } = Colors();
   return (
     <View style={styles.sectionContainer}>
       <Text
         style={[
           styles.sectionTitle,
           {
-            color: isDarkMode ? Colors.white : Colors.black,
+            color: foreground,
           },
         ]}>
         {title}
@@ -46,9 +47,10 @@ function Section({ children, title }: SectionProps): JSX.Element {
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+  const { background, backgroundDim } = Colors();
 
   const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    backgroundColor: backgroundDim,
   };
 
   const [members, setMembers] = useState(
@@ -63,6 +65,37 @@ function App(): JSX.Element {
       ] as MapPartyMember[],
   );
 
+  let totalMaps = 0;
+  let totalHoles = 0;
+  let totalFloors = 0;
+
+  members.forEach(member => {
+    totalMaps += member.totalMaps;
+    totalHoles += member.holes.length;
+    totalFloors += member.holes.reduce(
+      (floorCount, hole) => floorCount + hole,
+      0,
+    );
+  });
+
+  const floorRate = totalMaps === 0 ? 0.0 : (totalHoles * 100) / totalMaps;
+
+  const formattedMembers = `## Individual stats
+${members
+  .map(
+    ({ name, holes, totalMaps }) =>
+      `${name}: ${holes.length}/${totalMaps} ${
+        holes.length === 0 ? '' : `(${holes.join(', ')})`
+      }`,
+  )
+  .join('\n')}
+
+## Totals
+Total holes: ${totalHoles} (${floorRate.toFixed(2)}%)
+Total floors: ${totalFloors}
+`;
+  let markdownTextRef: TextInput | null;
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
@@ -74,11 +107,24 @@ function App(): JSX.Element {
         style={backgroundStyle}>
         <View
           style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
+            backgroundColor: background,
           }}>
           <Section title="Map Party">
             <MapPartyList members={members} setMembers={setMembers} />
           </Section>
+        </View>
+        <View
+          style={{
+            backgroundColor: background,
+            flex: 1,
+          }}>
+          <TextInput
+            ref={ref => (markdownTextRef = ref)}
+            style={{ fontFamily: 'ui-monospace' }}
+            selectTextOnFocus={true}
+            multiline={true}
+            value={formattedMembers}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>

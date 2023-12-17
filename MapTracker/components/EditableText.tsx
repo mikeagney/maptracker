@@ -31,12 +31,40 @@ export function EditableText({
       currentValue: value,
     }),
   );
+
+  function cancel() {
+    setState({ isEditing: false, currentValue: value });
+  }
+
+  function save() {
+    setState({ ...state, isEditing: false });
+    onChangeText(state.currentValue);
+  }
+
+  let textInputRef: TextInput | null;
+
   return (
     <View style={styles.row}>
       <View style={styles.textCol}>
         <TextInput
+          ref={ref => (textInputRef = ref)}
           value={state.currentValue}
           editable={state.isEditing}
+          onKeyPress={e => {
+            if (state.isEditing) {
+              switch (e.nativeEvent.key) {
+                case 'Enter':
+                  save();
+                  textInputRef?.blur();
+                  break;
+
+                case '\u001b':
+                  cancel();
+                  textInputRef?.blur();
+                  break;
+              }
+            }
+          }}
           onFocus={() => setState({ ...state, isEditing: true })}
           onChangeText={text => setState({ ...state, currentValue: text })}
         />
@@ -44,17 +72,10 @@ export function EditableText({
       <View style={styles.buttonCol}>
         {state.isEditing && (
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Pressable
-              onPress={() => {
-                setState({ ...state, isEditing: false });
-                onChangeText(state.currentValue);
-              }}>
+            <Pressable onPress={save}>
               <Icon name="save-outline" size={24} accessibilityLabel="Save" />
             </Pressable>
-            <Pressable
-              onPress={() =>
-                setState({ isEditing: false, currentValue: value })
-              }>
+            <Pressable onPress={cancel}>
               <Icon
                 name="arrow-undo-outline"
                 size={24}
