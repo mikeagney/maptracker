@@ -7,11 +7,11 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="c64cc01f-6188-4eac-8556-feffec822b26"
+    Name="3846e88e-b521-4436-8060-f07bfce900ce"
     Publisher="CN=magne"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="c64cc01f-6188-4eac-8556-feffec822b26" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="3846e88e-b521-4436-8060-f07bfce900ce" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>MapTracker</DisplayName>
